@@ -11,13 +11,16 @@ from datetime import datetime
 import os
 import pickle
 
+# Global flag for vector search availability
+VECTOR_SEARCH_AVAILABLE = False
+
 try:
     import faiss
     from sentence_transformers import SentenceTransformer
     VECTOR_SEARCH_AVAILABLE = True
 except ImportError:
-    VECTOR_SEARCH_AVAILABLE = False
     print("Warning: FAISS or sentence-transformers not available. Vector search disabled.")
+    print("The system will work with text-based search fallback.")
 
 
 class MemoryStorage:
@@ -31,8 +34,11 @@ class MemoryStorage:
             db_path: Path to SQLite database
             embedding_model: Sentence transformer model for embeddings
         """
+        global VECTOR_SEARCH_AVAILABLE
+        
         self.db_path = db_path
         self.embedding_dim = 384  # Dimension for all-MiniLM-L6-v2
+        self.vector_search_enabled = False
         
         # Create data directory if it doesn't exist
         os.makedirs(os.path.dirname(db_path) if os.path.dirname(db_path) else "data", exist_ok=True)
@@ -47,11 +53,11 @@ class MemoryStorage:
                 self.embedding_dim = self.encoder.get_sentence_embedding_dimension()
                 self.index = self._load_or_create_index()
                 self.memory_id_map = self._load_or_create_id_map()
+                self.vector_search_enabled = True
             except Exception as e:
                 print(f"Warning: Could not initialize vector search: {e}")
-                VECTOR_SEARCH_AVAILABLE = False
-        
-        self.vector_search_enabled = VECTOR_SEARCH_AVAILABLE
+                print("Falling back to text-based search.")
+                self.vector_search_enabled = False
     
     def _init_database(self):
         """Initialize SQLite database schema"""

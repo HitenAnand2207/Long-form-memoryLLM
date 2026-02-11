@@ -1,0 +1,393 @@
+# Long-Form Memory System - .gitignore
+
+# ============================================================================
+# Python
+# ============================================================================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+test-results/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# ============================================================================
+# Project-Specific Data Files
+# ============================================================================
+
+# Database files (SQLite)
+*.db
+*.sqlite
+*.sqlite3
+data/*.db
+data/*.sqlite
+
+# FAISS index files
+data/embeddings/*.index
+data/embeddings/*.pkl
+data/embeddings/faiss.index
+data/embeddings/id_map.pkl
+
+# Temporary data directory
+data/temp/
+data/tmp/
+
+# Generated reports
+evaluation_report.json
+benchmark_results.json
+*.report.json
+
+# ============================================================================
+# IDE & Editors
+# ============================================================================
+
+# VSCode
+.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+.*.swp
+.*.swo
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# ============================================================================
+# Operating System
+# ============================================================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# ============================================================================
+# Logs and Temporary Files
+# ============================================================================
+
+# Log files
+*.log
+logs/
+*.log.*
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# ============================================================================
+# Node.js (if you add frontend build tools)
+# ============================================================================
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# ============================================================================
+# Package Managers
+# ============================================================================
+
+# Poetry
+poetry.lock
+
+# Conda
+*.conda
+.conda/
+
+# ============================================================================
+# Build & Distribution
+# ============================================================================
+
+# Compiled files
+*.pyc
+*.pyo
+*.pyd
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# ============================================================================
+# Security & Secrets
+# ============================================================================
+
+# API keys and secrets
+.env
+.env.local
+.env.*.local
+secrets.json
+config/secrets.*
+*.key
+*.pem
+*.cert
+
+# Credentials
+credentials.json
+token.json
+auth.json
+
+# ============================================================================
+# Testing & Development
+# ============================================================================
+
+# Test databases
+test_memories.db
+test*.db
+*_test.db
+
+# Development data
+dev_data/
+local_data/
+
+# Profiling
+*.prof
+*.lprof
+
+# ============================================================================
+# Documentation Build
+# ============================================================================
+
+# Sphinx
+_build/
+_static/
+_templates/
+
+# ============================================================================
+# Miscellaneous
+# ============================================================================
+
+# Compressed files (unless explicitly needed)
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Cache directories
+.cache/
+__cache__/
+
+# Local configuration
+local_config.py
+local_settings.py
+config.local.json
+
+# ============================================================================
+# Keep These Files
+# ============================================================================
+
+# Keep empty directories with .gitkeep
+!.gitkeep
+
+# Keep example config files
+!config.example.json
+!.env.example
+
+# ============================================================================
+# Custom Exclusions
+# ============================================================================
+
+# Exclude large model files if any
+*.model
+*.bin
+models/
+
+# Exclude personal test scripts
+test_personal.py
+scratch.py
+playground.py
+
+# Exclude large datasets
+datasets/
+*.csv
+*.tsv
+*.json
+# But keep small example/demo data
+!examples/*.json
+!examples/*.csv
+
+# Exclude user-specific demos
+user_demos/
+my_tests/
