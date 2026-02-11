@@ -87,6 +87,8 @@ class ConversationAgent:
         
         # Step 1: Retrieve relevant memories
         relevant_memories = []
+        retrieval_time = 0.0  # Initialize variable
+        
         if self.enable_memory and retrieve_memories and turn_number > 1:
             retrieval_start = time.time()
             
@@ -125,6 +127,8 @@ class ConversationAgent:
         
         # Step 4: Extract memories from this turn
         extracted_memories = []
+        extraction_time = 0.0  # Initialize variable
+        
         if self.enable_memory:
             extraction_start = time.time()
             
