@@ -138,30 +138,27 @@ long-form-memory/
 │   ├── conversation_agent.py         # Main pipeline orchestrator
 │   ├── api_server.py                 # Flask REST API (required for web interface)
 │   ├── demo.py                       # Interactive terminal demo + benchmark
-│   └── evaluate.py                   # Full evaluation against hackathon criteria
+│   ├── evaluate.py                   # Full evaluation against hackathon criteria
+│   ├── apply_fixes.py                # System maintenance utilities
+│   ├── run_demo.py                   # Scripted pipeline demo (Turn 1 → 937)
+│   └── run_demo.ipynb                # Jupyter notebook with visualisations
 │
 ├── tests/
 │   └── test_system.py                # Unit tests for all modules
 │
 ├── data/                             # Auto-created on first run (git-ignored)
 │   ├── memories.db                   # SQLite memory database
+│   ├── demo_memories.db              # Demo session database
 │   └── embeddings/                   # FAISS index files
-│
-├── # ── Demos ──────────────────────────────────────────────
-├── run_demo.py                       # Scripted pipeline demo (Turn 1 → 937)
-├── run_demo.ipynb                    # Jupyter notebook with visualisations
-├── run_demo.bat                      # Windows wrapper for run_demo.py
-├── run_demo.sh                       # Linux/Mac wrapper for run_demo.py
+│       ├── faiss.index               # FAISS vector index
+│       └── id_map.pkl                # ID mapping for FAISS
 │
 ├── # ── Web Interface ──────────────────────────────────────
 ├── web_interface.html                # Browser UI (requires api_server.py running)
-├── start_web_demo.bat                # Starts API + opens browser — Windows, one click
-├── start_web_demo.sh                 # Starts API + opens browser — Linux/Mac
 │
 ├── # ── Setup & Install ────────────────────────────────────
 ├── setup.bat                         # Full Windows setup (venv + all deps)
 ├── setup.sh                          # Full Linux/Mac setup
-├── quickstart.bat                    # Minimal install + runs demo (Windows)
 ├── requirements.txt                  # All Python dependencies (FAISS optional)
 ├── requirements-minimal.txt          # Core dependencies only — no FAISS needed
 │
@@ -170,25 +167,10 @@ long-form-memory/
 │
 ├── # ── Git ────────────────────────────────────────────────
 ├── .gitignore                        # Excludes venv/, data/, __pycache__, etc.
-├── .gitattributes                    # Line-ending normalisation
-├── LICENSE                           # MIT
-│
-├── # ── Presentation ───────────────────────────────────────
-├── Long_Form_Memory_System_Presentation.pptx   # 10-slide hackathon deck
-├── Long_Form_Memory_System_Presentation.pdf    # PDF version
 │
 └── # ── Documentation ──────────────────────────────────────
     ├── README.md                     # This file
-    ├── QUICKSTART.md                 # Quick start and usage examples
-    ├── INSTALL.md                    # Detailed installation guide
-    ├── TROUBLESHOOTING.md            # Common issues and fixes
-    ├── WEB_INTERFACE_FIX.md          # Web interface setup guide
-    ├── DEMO_GUIDE.md                 # Guide to all demo modes
-    ├── GIT_SETUP.md                  # Git and GitHub setup guide
-    ├── FIX_README.md                 # Bug fix notes
-    ├── PRESENTATION_NOTES.md         # Slide-by-slide speaker notes
-    ├── SUBMISSION_CHECKLIST.md       # Pre-submission checklist
-    └── PROJECT_OVERVIEW.md           # Hackathon submission summary
+    └── QUICKSTART.md                 # Quick start and usage examples
 ```
 
 ---
@@ -245,9 +227,7 @@ Checks all packages and tells you exactly what is missing and how to fix it.
 Demonstrates the **Turn 1 → Turn 937** recall scenario from the hackathon spec.
 
 ```bash
-python run_demo.py      # all platforms
-run_demo.bat            # Windows shortcut
-bash run_demo.sh        # Linux/Mac shortcut
+python src/run_demo.py      # all platforms
 ```
 
 Sample output:
@@ -279,7 +259,7 @@ Commands while chatting: `stats`, `memories`, `clear`, `exit`
 ### 3. Jupyter notebook
 
 ```bash
-jupyter notebook run_demo.ipynb
+jupyter notebook src/run_demo.ipynb
 ```
 
 8 sections covering extraction → storage → retrieval → latency graphs → session statistics.
@@ -305,18 +285,12 @@ Runs all five hackathon criteria and saves results to `evaluation_report.json`.
 
 The web interface (`web_interface.html`) connects to the API server (`src/api_server.py`) over HTTP. Both must run at the same time.
 
-### One-command start
-
-```bash
-start_web_demo.bat     # Windows — starts API + opens browser automatically
-bash start_web_demo.sh # Linux/Mac
-```
-
 ### Manual start
 
-**Terminal 1 — keep open:**
+**Terminal — keep open:**
 ```bash
-venv\Scripts\activate
+venv\Scripts\activate         # Windows
+source venv/bin/activate      # Linux/Mac
 python src/api_server.py
 ```
 
@@ -325,9 +299,7 @@ python src/api_server.py
 **Verify the API is up:** visit `http://localhost:5000/health`  
 Expected: `{ "status": "healthy", "memory_enabled": true }`
 
-> If the API is not running when you open the page, the interface now shows a red error card explaining exactly what to do — no silent failure.
-
-See `WEB_INTERFACE_FIX.md` for detailed troubleshooting.
+> If the API is not running when you open the page, the interface shows a red error card explaining exactly what to do.
 
 ---
 
@@ -418,13 +390,11 @@ Base URL: `http://localhost:5000`
 
 | Problem | Fix |
 |---------|-----|
-| Web interface shows nothing / no response | Run `python src/api_server.py` first — see `WEB_INTERFACE_FIX.md` |
-| `UnboundLocalError: VECTOR_SEARCH_AVAILABLE` | Fixed in current `src/memory_storage.py` — see `FIX_README.md` |
+| Web interface shows nothing / no response | Run `python src/api_server.py` first |
 | FAISS fails to install | Install `requirements-minimal.txt` instead; FAISS is optional |
 | Port 5000 in use | Change port in `api_server.py` and `web_interface.html` |
 | Import errors / missing modules | Run `python diagnose.py` for exact fix |
-
-Full details in `TROUBLESHOOTING.md`.
+| Module not found errors | Activate virtual environment: `venv\Scripts\activate` (Windows) or `source venv/bin/activate` (Linux/Mac) |
 
 ---
 
@@ -436,12 +406,12 @@ Full details in `TROUBLESHOOTING.md`.
 git init
 git add .
 git commit -m "Team DEDSEC: Long-Form Memory System"
+git remote add origin <your-repo-url>
+git push -u origin main
 ```
-
-See `GIT_SETUP.md` for full push instructions.
 
 ---
 
 ## License
 
-MIT — see `LICENSE`.
+MIT License - free to use and modify.
