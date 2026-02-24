@@ -59,7 +59,7 @@ python src/demo.py
 
 This demonstrates:
 - Memory extraction at turn 1
-- Memory retrieval at turn 937 (like the problem statement example)
+- Memory retrieval at turn 937 (long-range recall checkpoint)
 - Memory persistence across 1000+ turns
 
 ### 3. API Server
@@ -100,7 +100,7 @@ curl -X POST http://localhost:5000/search \
 ```
 
 ### 4. Run Evaluation
-Test system performance against hackathon criteria:
+Run the evaluation suite:
 
 ```bash
 python src/evaluate.py
@@ -162,7 +162,7 @@ Response + Metadata
 
 ## Performance Characteristics
 
-Based on your i7-1255U laptop:
+Based on a reference i7-1255U laptop:
 
 - **Memory Extraction**: ~50ms per turn
 - **Memory Retrieval**: ~30-50ms

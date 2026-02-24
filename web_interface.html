@@ -3,8 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Long-Form Memory System</title>
+    <title>Hiten Anand | Long-Form Memory</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+        :root {
+            --ink: #1b1b1f;
+            --muted: #6b7280;
+            --panel: #fffdf9;
+            --panel-2: #f5f1ea;
+            --accent: #0ea5a4;
+            --accent-strong: #0f766e;
+            --warm: #f97316;
+            --shadow: rgba(20, 16, 10, 0.18);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,8 +25,12 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(1200px 800px at 10% 10%, rgba(14, 165, 164, 0.35), transparent 60%),
+                radial-gradient(1000px 700px at 90% 20%, rgba(249, 115, 22, 0.3), transparent 55%),
+                linear-gradient(180deg, #f7f4ed 0%, #f2efe7 100%);
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -22,9 +39,9 @@
         }
 
         .container {
-            background: white;
+            background: var(--panel);
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 24px 60px var(--shadow);
             width: 100%;
             max-width: 1200px;
             height: 90vh;
@@ -34,7 +51,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0ea5a4 0%, #f97316 100%);
             color: white;
             padding: 20px 30px;
             display: flex;
@@ -54,9 +71,10 @@
         }
 
         .stat-item {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.22);
             padding: 5px 15px;
             border-radius: 20px;
+            font-family: 'IBM Plex Mono', monospace;
         }
 
         .main-content {
@@ -76,7 +94,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            background: #f8f9fa;
+            background: var(--panel-2);
         }
 
         .memory-header {
@@ -87,7 +105,7 @@
 
         .memory-header h2 {
             font-size: 18px;
-            color: #333;
+            color: var(--ink);
             margin-bottom: 10px;
         }
 
@@ -98,11 +116,11 @@
         }
 
         .memory-item {
-            background: white;
+            background: var(--panel);
             padding: 15px;
             border-radius: 10px;
             margin-bottom: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(20, 16, 10, 0.08);
         }
 
         .memory-type {
@@ -123,13 +141,13 @@
 
         .memory-content {
             font-size: 14px;
-            color: #333;
+            color: var(--ink);
             margin-top: 5px;
         }
 
         .memory-meta {
             font-size: 12px;
-            color: #999;
+            color: var(--muted);
             margin-top: 5px;
         }
 
@@ -137,7 +155,7 @@
             flex: 1;
             overflow-y: auto;
             padding: 20px;
-            background: #fafafa;
+            background: #fbfaf7;
         }
 
         .message {
@@ -159,26 +177,26 @@
         }
 
         .message.user .message-bubble {
-            background: #667eea;
+            background: var(--accent-strong);
             color: white;
             border-bottom-right-radius: 5px;
         }
 
         .message.assistant .message-bubble {
-            background: white;
-            color: #333;
+            background: var(--panel);
+            color: var(--ink);
             border-bottom-left-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(20, 16, 10, 0.08);
         }
 
         .message-meta {
             font-size: 11px;
-            color: #999;
+            color: var(--muted);
             margin-top: 5px;
         }
 
         .active-memories {
-            background: #fff3cd;
+            background: #fff3df;
             padding: 10px;
             border-radius: 10px;
             margin-top: 10px;
@@ -187,7 +205,7 @@
 
         .input-section {
             padding: 20px;
-            background: white;
+            background: var(--panel);
             border-top: 1px solid #e0e0e0;
         }
 
@@ -207,12 +225,12 @@
         }
 
         #userInput:focus {
-            border-color: #667eea;
+            border-color: var(--accent);
         }
 
         button {
             padding: 15px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0ea5a4 0%, #f97316 100%);
             color: white;
             border: none;
             border-radius: 25px;
@@ -233,8 +251,8 @@
         .turn-counter {
             text-align: center;
             padding: 10px;
-            background: #f0f0f0;
-            color: #666;
+            background: #f1ede6;
+            color: #6b6b6b;
             font-size: 12px;
             font-weight: 600;
         }
@@ -243,7 +261,7 @@
             display: none;
             text-align: center;
             padding: 10px;
-            color: #999;
+            color: var(--muted);
         }
 
         .loading.active {
@@ -254,7 +272,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🧠 Long-Form Memory System</h1>
+            <h1>🧠 Long-Form Memory — Hiten Anand</h1>
             <div class="stats">
                 <div class="stat-item">
                     <span id="turnCount">Turn: 0</span>
@@ -274,7 +292,7 @@
                 <div class="chat-messages" id="chatMessages">
                     <div class="message assistant">
                         <div class="message-bubble">
-                            👋 Hello! I'm a memory-enabled AI assistant. I can remember information across thousands of conversation turns. Try telling me your preferences, constraints, or any important information, and I'll recall it later!
+                            👋 Hi! This is Hiten Anand's memory-enabled assistant. Share preferences, constraints, or key details and I'll recall them later.
                         </div>
                     </div>
                 </div>

@@ -1,7 +1,6 @@
 # Long-Form Memory System
 
-**Team:** DEDSEC  
-**Members:** Hiten Anand • Nidhi Singh
+**Author:** Hiten Anand
 
 > A real-time AI memory system that retains and recalls information across **1,000+ conversation turns** — without replaying full conversation history or increasing system latency.
 
@@ -19,7 +18,7 @@
 - [Web Interface](#web-interface)
 - [API Reference](#api-reference)
 - [Performance Metrics](#performance-metrics)
-- [Evaluation Criteria](#evaluation-criteria)
+- [Evaluation Metrics](#evaluation-metrics)
 - [Troubleshooting](#troubleshooting)
 - [License](#license)
 
@@ -33,7 +32,7 @@ Modern LLMs:
 - Forget early information as conversations grow
 - Become slow and expensive when full history is injected
 
-**Example (from the hackathon spec):**
+**Example (long-range recall stress test):**
 ```
 Turn 1:   "My preferred language is Kannada"
 Turn 937: "Can you call me tomorrow?"
@@ -122,7 +121,6 @@ User Message
 | Embeddings | Sentence-Transformers (`all-MiniLM-L6-v2`) |
 | API Server | Flask + Flask-CORS |
 | Notebook Demo | Jupyter |
-| Presentation | PptxGenJS |
 
 ---
 
@@ -138,7 +136,7 @@ long-form-memory/
 │   ├── conversation_agent.py         # Main pipeline orchestrator
 │   ├── api_server.py                 # Flask REST API (required for web interface)
 │   ├── demo.py                       # Interactive terminal demo + benchmark
-│   ├── evaluate.py                   # Full evaluation against hackathon criteria
+│   ├── evaluate.py                   # Full evaluation suite
 │   ├── apply_fixes.py                # System maintenance utilities
 │   ├── run_demo.py                   # Scripted pipeline demo (Turn 1 → 937)
 │   └── run_demo.ipynb                # Jupyter notebook with visualisations
@@ -224,7 +222,7 @@ Checks all packages and tells you exactly what is missing and how to fix it.
 
 ### 1. Scripted pipeline demo — *start here*
 
-Demonstrates the **Turn 1 → Turn 937** recall scenario from the hackathon spec.
+Demonstrates the **Turn 1 → Turn 937** long-range recall scenario.
 
 ```bash
 python src/run_demo.py      # all platforms
@@ -277,7 +275,7 @@ python src/demo.py
 python src/evaluate.py
 ```
 
-Runs all five hackathon criteria and saves results to `evaluation_report.json`.
+Runs the full evaluation suite and saves results to `evaluation_report.json`.
 
 ---
 
@@ -372,9 +370,9 @@ Base URL: `http://localhost:5000`
 
 ---
 
-## Evaluation Criteria
+## Evaluation Metrics
 
-| Criterion | Priority | Implementation |
+| Metric | Priority | Implementation |
 |-----------|----------|---------------|
 | Long-range recall | High | Turn-indexed retrieval + recency decay |
 | Accuracy 1–1,000 turns | High | Confidence scoring + deduplication |
@@ -382,7 +380,7 @@ Base URL: `http://localhost:5000`
 | Latency impact | Medium | Optimised queries + optional FAISS |
 | Hallucination avoidance | Medium | Source tracking + confidence thresholds |
 | System design | Low | Modular, testable, documented |
-| Innovation | Medium | Hybrid storage + diversity-filtered injection |
+| Robustness | Medium | Hybrid storage + diversity-filtered injection |
 
 ---
 
@@ -405,7 +403,7 @@ Base URL: `http://localhost:5000`
 ```bash
 git init
 git add .
-git commit -m "Team DEDSEC: Long-Form Memory System"
+git commit -m "Hiten Anand: Long-Form Memory System"
 git remote add origin <your-repo-url>
 git push -u origin main
 ```
