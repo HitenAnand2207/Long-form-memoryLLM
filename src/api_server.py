@@ -3,7 +3,7 @@ API Server for Long-Form Memory System
 Provides REST endpoints for conversation processing
 """
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import os
 import sys
@@ -42,6 +42,15 @@ def _parse_positive_int(value, field_name: str, default: int) -> int:
     if parsed <= 0:
         raise ValueError(f"{field_name} must be > 0")
     return parsed
+
+
+@app.route("/", methods=["GET"])
+def index():
+    """Serve the web interface"""
+    html_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "web_interface.html")
+    )
+    return send_file(html_path)
 
 
 @app.route("/health", methods=["GET"])
@@ -247,6 +256,7 @@ if __name__ == "__main__":
     print("Long-Form Memory API Server")
     print("=" * 60)
     print("\nStarting server on http://localhost:5000")
+    print("\n  >>  Open http://localhost:5000 in your browser for the web UI")
     print("\nAvailable endpoints:")
     print("  GET  /health                    - Health check")
     print("  POST /conversation              - Process conversation turn")

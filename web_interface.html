@@ -331,7 +331,9 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:5000';
+        // When served from Flask (http://localhost:5000) use relative paths to
+        // stay same-origin. When opened as a file:// fallback to absolute URL.
+        const API_URL = window.location.protocol === 'file:' ? 'http://localhost:5000' : '';
         let sessionId = 'web_' + Date.now();
         let turnNumber = 0;
 
@@ -471,8 +473,8 @@
                 if (data.memories && data.memories.length > 0) {
                     memoryList.innerHTML = data.memories.map(m => `
                         <div class="memory-item">
-                            <span class="memory-type type-${m.type}">${m.type}</span>
-                            <div class="memory-content">${m.content}</div>
+                            <span class="memory-type type-${escapeHtml(m.type)}">${escapeHtml(m.type)}</span>
+                            <div class="memory-content">${escapeHtml(m.content)}</div>
                             <div class="memory-meta">
                                 Turn ${m.source_turn} • Confidence: ${(m.confidence * 100).toFixed(0)}%
                             </div>
