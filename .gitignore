@@ -379,6 +379,46 @@ test_personal.py
 scratch.py
 playground.py
 
+# ============================================================================
+# Personal Data & Session Data — NEVER commit these
+# ============================================================================
+
+# All SQLite memory databases (any location, any name)
+*.db
+*.db-shm
+*.db-wal
+data/
+!data/.gitkeep
+
+# FAISS vector index and ID maps
+*.index
+*.pkl
+data/embeddings/
+
+# Exported / dumped memory content
+memories_export.*
+session_export.*
+memory_dump.*
+export_*.json
+dump_*.json
+
+# Evaluation and benchmark artefacts that may contain chat content
+evaluation_report.json
+benchmark_results.json
+*.report.json
+session_stats.json
+
+# Any file that could contain names, preferences, or conversation history
+conversation_history.*
+chat_history.*
+user_data.*
+personal_data.*
+profile.*
+
+# Demo GIF (large binary — add separately when ready)
+demo.gif
+*.gif
+
 # Exclude large datasets
 datasets/
 *.csv
