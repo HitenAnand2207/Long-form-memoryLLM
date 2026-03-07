@@ -6,8 +6,24 @@
 
 ---
 
+## Demo
+
+<!-- Replace demo.gif with your recording once captured.
+     Recommended tool: ShareX (Windows) or Peek (Linux) — record the web UI,
+     paste Turn-1 message, fast-forward to Turn 937, show the recalled memory.
+     Target: 30–60 s, 800×500 px, ≤ 5 MB. -->
+
+![Long-Form Memory Demo — Turn 1 → Turn 937 recall](demo.gif)
+
+> *Turn 1:* user sets language preference → *Turn 937:* system recalls it with 0 latency regression.
+> Run `python src/run_demo.py` to see the same output in your terminal right now.
+
+---
+
 ## Table of Contents
 
+- [Demo](#demo)
+- [Quick Start — one command](#quick-start--one-command)
 - [Problem Statement](#problem-statement)
 - [System Architecture](#system-architecture)
 - [Key Features](#key-features)
@@ -166,9 +182,62 @@ long-form-memory/
 ├── # ── Git ────────────────────────────────────────────────
 ├── .gitignore                        # Excludes venv/, data/, __pycache__, etc.
 │
+├── # ── One-command run ────────────────────────────────────
+├── Makefile                          # make run / make api / make test / make help
+├── Dockerfile                        # docker build + run in one step
+│
 └── # ── Documentation ──────────────────────────────────────
     ├── README.md                     # This file
     └── QUICKSTART.md                 # Quick start and usage examples
+```
+
+---
+
+## Quick Start — one command
+
+### Option 1 — Make (recommended)
+
+```bash
+# 1. Install minimal deps
+make install
+
+# 2. Run the Turn-1 → Turn-937 scripted demo
+make run
+
+# 3. Start the REST API (then open web_interface.html in your browser)
+make api
+```
+
+All targets: `make help`
+
+| Target | What it does |
+|---|---|
+| `make run` / `make demo` | Scripted Turn-1 → Turn-937 recall demo |
+| `make api` | Flask REST API on `http://localhost:5000` |
+| `make interactive` | Live chat session with memory |
+| `make benchmark` | 1,000-turn latency benchmark |
+| `make test` | Pytest regression suite |
+| `make eval` | Full evaluation → `evaluation_report.json` |
+| `make install-full` | Add FAISS + sentence-transformers |
+
+### Option 2 — Docker
+
+```bash
+# Build image
+docker build -t long-form-memory .
+
+# Run API server (memories persisted to ./data on your host)
+docker run -p 5000:5000 -v "$(pwd)/data:/app/data" long-form-memory
+```
+
+Then open `web_interface.html` in your browser.
+
+### Option 3 — Plain Python
+
+```bash
+python src/run_demo.py          # scripted demo
+python src/api_server.py        # REST API
+python src/demo.py              # interactive chat
 ```
 
 ---
@@ -388,7 +457,7 @@ Base URL: `http://localhost:5000`
 
 | Problem | Fix |
 |---------|-----|
-| Web interface shows nothing / no response | Run `python src/api_server.py` first |
+| Web interface shows nothing / no response | Run `make api` or `python src/api_server.py` first |
 | FAISS fails to install | Install `requirements-minimal.txt` instead; FAISS is optional |
 | Port 5000 in use | Change port in `api_server.py` and `web_interface.html` |
 | Import errors / missing modules | Run `python diagnose.py` for exact fix |
