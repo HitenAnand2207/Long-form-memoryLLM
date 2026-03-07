@@ -309,7 +309,7 @@
                             placeholder="Type your message..."
                             autocomplete="off"
                         >
-                        <button onclick="sendMessage()">Send</button>
+                        <button type="button" id="sendBtn" onclick="sendMessage()">Send</button>
                     </div>
                 </div>
             </div>
@@ -338,19 +338,44 @@
         document.getElementById('sessionId').textContent = sessionId;
         document.getElementById('userInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
+                e.preventDefault();  // prevent any native form-submit / page reload
                 sendMessage();
             }
         });
 
+        let isFetching = false;
+
+        function setFetchingState(fetching) {
+            isFetching = fetching;
+            const btn = document.getElementById('sendBtn');
+            const input = document.getElementById('userInput');
+            btn.disabled = fetching;
+            input.disabled = fetching;
+            btn.textContent = fetching ? '...' : 'Send';
+        }
+
+        function escapeHtml(text) {
+            if (text == null) return '';
+            return String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
         async function sendMessage() {
+            if (isFetching) return;  // guard against double-send while request is in-flight
+
             const input = document.getElementById('userInput');
             const message = input.value.trim();
             
             if (!message) return;
 
-            // Clear input
+            // Clear input and disable controls while fetching
             input.value = '';
             turnNumber++;
+            setFetchingState(true);
 
             // Add user message to chat
             addMessageToChat('user', message);
@@ -373,8 +398,9 @@
 
                 const data = await response.json();
 
-                // Hide loading
-                document.getElementById('loading').classList.remove('active');
+                if (!response.ok) {
+                    throw new Error(data.error || `Server error ${response.status}`);
+                }
 
                 // Add assistant response
                 addMessageToChat(
@@ -391,9 +417,12 @@
                 await updateMemoriesList();
 
             } catch (error) {
-                document.getElementById('loading').classList.remove('active');
                 console.error('Error:', error);
                 addMessageToChat('assistant', 'Sorry, there was an error processing your message. Make sure the API server is running on port 5000.');
+            } finally {
+                document.getElementById('loading').classList.remove('active');
+                setFetchingState(false);
+                document.getElementById('userInput').focus();
             }
         }
 
@@ -402,7 +431,7 @@
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${role}`;
 
-            let html = `<div class="message-bubble">${content}`;
+            let html = `<div class="message-bubble">${escapeHtml(content)}`;
 
             if (activeMemories && activeMemories.length > 0) {
                 html += `
@@ -410,14 +439,14 @@
                         💡 Using ${activeMemories.length} memories:
                         ${activeMemories.map(m => `
                             <div style="margin-top: 5px; padding-left: 10px;">
-                                • ${m.content} (turn ${m.origin_turn})
+                                • ${escapeHtml(m.content)} (turn ${m.origin_turn})
                             </div>
                         `).join('')}
                     </div>
                 `;
             }
 
-            if (performance) {
+            if (performance && performance.total_latency_ms != null) {
                 html += `
                     <div class="message-meta">
                         ⚡ ${performance.total_latency_ms.toFixed(1)}ms
