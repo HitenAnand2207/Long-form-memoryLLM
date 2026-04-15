@@ -177,7 +177,7 @@ long-form-memory/
 ├── requirements-minimal.txt          # Core dependencies only — no FAISS needed
 │
 ├── # ── Diagnostics ────────────────────────────────────────
-├── diagnose.py                       # Checks environment, reports missing packages
+├── diagnose.py                       # Validates env, core modules, data dirs; exits non-zero on critical failures
 │
 ├── # ── Git ────────────────────────────────────────────────
 ├── .gitignore                        # Excludes venv/, data/, __pycache__, etc.
@@ -283,7 +283,14 @@ pip install -r requirements.txt
 python diagnose.py
 ```
 
-Checks all packages and tells you exactly what is missing and how to fix it.
+Checks Python/venv status, required+optional packages, data directories, and core imports.
+If critical checks fail, the script exits with status code `1` (useful for CI and setup scripts).
+
+The install hints shown by the script use the active interpreter path, for example:
+
+```bash
+"<python-executable>" -m pip install flask sqlalchemy
+```
 
 ---
 
@@ -460,7 +467,7 @@ Base URL: `http://localhost:5000`
 | Web interface shows nothing / no response | Run `make api` or `python src/api_server.py` first |
 | FAISS fails to install | Install `requirements-minimal.txt` instead; FAISS is optional |
 | Port 5000 in use | Change port in `api_server.py` and `web_interface.html` |
-| Import errors / missing modules | Run `python diagnose.py` for exact fix |
+| Import errors / missing modules | Run `python diagnose.py` for exact fix; script returns non-zero when critical issues remain |
 | Module not found errors | Activate virtual environment: `venv\Scripts\activate` (Windows) or `source venv/bin/activate` (Linux/Mac) |
 
 ---
