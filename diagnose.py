@@ -1,137 +1,188 @@
-"""
-Diagnostic and Fix Script for Long-Form Memory System
-Run this if you encounter any issues
-"""
+"""Diagnostic and quick-fix helper for the Long-Form Memory project."""
 
+import importlib.util
 import sys
-import os
+from pathlib import Path
 
-print("=" * 70)
-print("  DIAGNOSTIC SCRIPT - Long-Form Memory System")
-print("=" * 70)
-print()
 
-# Check Python version
-print("1. Checking Python version...")
-python_version = sys.version_info
-print(f"   Python {python_version.major}.{python_version.minor}.{python_version.micro}")
-if python_version.major < 3 or (python_version.major == 3 and python_version.minor < 9):
-    print("   ⚠️  WARNING: Python 3.9+ recommended")
-else:
-    print("   ✓ Python version OK")
-print()
-
-# Check required packages
-print("2. Checking required packages...")
-required_packages = {
-    'flask': 'Flask',
-    'sqlalchemy': 'SQLAlchemy',
+REQUIRED_PACKAGES = {
+    "flask": "Flask",
+    "sqlalchemy": "SQLAlchemy",
 }
 
-optional_packages = {
-    'faiss': 'FAISS (for vector search)',
-    'sentence_transformers': 'Sentence Transformers (for embeddings)',
+OPTIONAL_PACKAGES = {
+    "faiss": "FAISS (for vector search)",
+    "sentence_transformers": "Sentence Transformers (for embeddings)",
 }
 
-missing_required = []
-missing_optional = []
+CORE_MODULES = [
+    ("memory_extraction", "Memory extraction module"),
+    ("memory_storage", "Memory storage module"),
+    ("memory_retrieval", "Memory retrieval module"),
+    ("conversation_agent", "Conversation agent module"),
+]
 
-for package, name in required_packages.items():
+
+def _is_installed(module_name: str) -> bool:
+    """Check package presence without importing module side effects."""
+    return importlib.util.find_spec(module_name) is not None
+
+
+def _python_version_ok() -> bool:
+    version = sys.version_info
+    return version.major > 3 or (version.major == 3 and version.minor >= 9)
+
+
+def _print_header() -> None:
+    print("=" * 70)
+    print("  DIAGNOSTIC SCRIPT - Long-Form Memory System")
+    print("=" * 70)
+    print()
+
+
+def _check_python() -> None:
+    print("1. Checking Python version...")
+    version = sys.version_info
+    print(f"   Python {version.major}.{version.minor}.{version.micro}")
+    if _python_version_ok():
+        print("   ✓ Python version OK")
+    else:
+        print("   ⚠ WARNING: Python 3.9+ recommended")
+
+    in_venv = sys.prefix != getattr(sys, "base_prefix", sys.prefix)
+    if in_venv:
+        print("   ✓ Virtual environment active")
+    else:
+        print("   ⚠ WARNING: Virtual environment not detected")
+    print()
+
+
+def _check_packages() -> tuple[list[str], list[str]]:
+    print("2. Checking required packages...")
+    missing_required: list[str] = []
+    missing_optional: list[str] = []
+
+    for package, display_name in REQUIRED_PACKAGES.items():
+        if _is_installed(package):
+            print(f"   ✓ {display_name}")
+        else:
+            print(f"   ✗ {display_name} - MISSING (REQUIRED)")
+            missing_required.append(package)
+
+    for package, display_name in OPTIONAL_PACKAGES.items():
+        if _is_installed(package):
+            print(f"   ✓ {display_name}")
+        else:
+            print(f"   ⚠ {display_name} - MISSING (Optional - will use fallback)")
+            missing_optional.append(package)
+
+    print()
+    return missing_required, missing_optional
+
+
+def _check_data_dirs(project_root: Path) -> bool:
+    print("3. Checking data directory...")
+    data_dir = project_root / "data"
+    embeddings_dir = data_dir / "embeddings"
+
     try:
-        __import__(package)
-        print(f"   ✓ {name}")
-    except ImportError:
-        print(f"   ✗ {name} - MISSING (REQUIRED)")
-        missing_required.append(package)
+        data_dir.mkdir(exist_ok=True)
+        embeddings_dir.mkdir(parents=True, exist_ok=True)
+        print(f"   ✓ Data directory ready: {data_dir}")
+        print(f"   ✓ Embeddings directory ready: {embeddings_dir}")
+        print()
+        return True
+    except OSError as exc:
+        print(f"   ✗ Failed to prepare data directories: {exc}")
+        print()
+        return False
 
-for package, name in optional_packages.items():
-    try:
-        __import__(package)
-        print(f"   ✓ {name}")
-    except ImportError:
-        print(f"   ⚠️  {name} - MISSING (Optional - will use fallback)")
-        missing_optional.append(package)
 
-print()
+def _check_core_modules(project_root: Path) -> list[str]:
+    print("4. Testing core modules...")
+    src_dir = project_root / "src"
+    import_errors: list[str] = []
 
-# Check data directory
-print("3. Checking data directory...")
-if os.path.exists("data"):
-    print("   ✓ Data directory exists")
-else:
-    print("   Creating data directory...")
-    os.makedirs("data/embeddings", exist_ok=True)
-    print("   ✓ Data directory created")
-print()
+    if not src_dir.exists():
+        message = f"src directory not found at {src_dir}"
+        print(f"   ✗ {message}")
+        print()
+        return [message]
 
-# Fix suggestions
-if missing_required:
-    print("⚠️  REQUIRED PACKAGES MISSING!")
+    if str(src_dir) not in sys.path:
+        sys.path.insert(0, str(src_dir))
+
+    for module_name, display_name in CORE_MODULES:
+        module_file = src_dir / f"{module_name}.py"
+        if not module_file.exists():
+            error_message = f"missing file: {module_file}"
+            print(f"   ✗ {display_name}: {error_message}")
+            import_errors.append(error_message)
+            continue
+
+        try:
+            __import__(module_name)
+            print(f"   ✓ {display_name}")
+        except Exception as exc:
+            error_message = f"{module_name}: {exc}"
+            print(f"   ✗ {display_name}: {exc}")
+            import_errors.append(error_message)
+
     print()
-    print("Run this command to install missing packages:")
-    print(f"   pip install {' '.join(missing_required)}")
+    return import_errors
+
+
+def _print_install_hints(missing_required: list[str], missing_optional: list[str]) -> None:
+    python_cmd = f'"{sys.executable}" -m pip install'
+
+    if missing_required:
+        print("⚠ REQUIRED PACKAGES MISSING")
+        print("Run this command to install missing required packages:")
+        print(f"   {python_cmd} {' '.join(missing_required)}")
+        print()
+
+    if missing_optional:
+        print("ℹ Optional packages missing (system works without them)")
+        print("To enable full semantic retrieval features, run:")
+        print(f"   {python_cmd} {' '.join(missing_optional)}")
+        print("Note: Without FAISS and sentence-transformers, text fallback retrieval is used.")
+        print()
+
+
+def run_diagnostics() -> int:
+    project_root = Path(__file__).resolve().parent
+
+    _print_header()
+    _check_python()
+    missing_required, missing_optional = _check_packages()
+    dirs_ok = _check_data_dirs(project_root)
+    import_errors = _check_core_modules(project_root)
+    _print_install_hints(missing_required, missing_optional)
+
+    print("=" * 70)
+    print("  DIAGNOSTIC COMPLETE")
+    print("=" * 70)
     print()
 
-if missing_optional:
-    print("ℹ️  Optional packages missing (system will work without them):")
-    print()
-    print("To enable full features, run:")
-    print(f"   pip install {' '.join(missing_optional)}")
-    print()
-    print("Note: FAISS and sentence-transformers are optional.")
-    print("The system will use text-based search if they're not available.")
-    print()
+    if missing_required:
+        print("⚠ ACTION REQUIRED: Install missing required packages")
+        print(f"   \"{sys.executable}\" -m pip install {' '.join(missing_required)}")
+    elif import_errors or not dirs_ok:
+        print("⚠ ACTION REQUIRED: Resolve the module/data issues listed above")
+    else:
+        print("✓ Core checks passed")
+        print("You can now run:")
+        print(f"   \"{sys.executable}\" src/demo.py")
 
-# Test basic imports
-print("4. Testing core modules...")
-try:
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
-    from memory_extraction import MemoryExtractor
-    print("   ✓ Memory extraction module")
-except Exception as e:
-    print(f"   ✗ Memory extraction module: {e}")
+    if missing_optional:
+        print()
+        print("TIP: Install optional dependencies for best retrieval quality")
+        print(f"   \"{sys.executable}\" -m pip install {' '.join(missing_optional)}")
 
-try:
-    from memory_storage import MemoryStorage
-    print("   ✓ Memory storage module")
-except Exception as e:
-    print(f"   ✗ Memory storage module: {e}")
+    if missing_required or import_errors or not dirs_ok:
+        return 1
+    return 0
 
-try:
-    from memory_retrieval import MemoryRetriever
-    print("   ✓ Memory retrieval module")
-except Exception as e:
-    print(f"   ✗ Memory retrieval module: {e}")
 
-try:
-    from conversation_agent import ConversationAgent
-    print("   ✓ Conversation agent module")
-except Exception as e:
-    print(f"   ✗ Conversation agent module: {e}")
-
-print()
-
-# Summary
-print("=" * 70)
-print("  DIAGNOSTIC COMPLETE")
-print("=" * 70)
-print()
-
-if missing_required:
-    print("⚠️  ACTION REQUIRED: Install missing required packages")
-    print(f"   pip install {' '.join(missing_required)}")
-else:
-    print("✓ All required packages installed!")
-    print()
-    print("You can now run:")
-    print("   python src/demo.py")
-    print()
-    
-if missing_optional:
-    print("💡 TIP: For best performance, install optional packages:")
-    print(f"   pip install {' '.join(missing_optional)}")
-    print()
-    print("   Without FAISS/sentence-transformers:")
-    print("   - System will use text-based search (still works well)")
-    print("   - Slightly lower relevance in memory retrieval")
-    print()
+if __name__ == "__main__":
+    sys.exit(run_diagnostics())
