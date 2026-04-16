@@ -216,6 +216,7 @@ All targets: `make help`
 | `make api` | Flask REST API on `http://localhost:5000` |
 | `make interactive` | Live chat session with memory |
 | `make benchmark` | 1,000-turn latency benchmark |
+| `make benchmark-relevance` | Relevance benchmark: before vs after token normalization |
 | `make test` | Pytest regression suite |
 | `make eval` | Full evaluation → `evaluation_report.json` |
 | `make install-full` | Add FAISS + sentence-transformers |
