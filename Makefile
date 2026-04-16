@@ -7,7 +7,7 @@ PIP     ?= pip
 VENV    := .venv
 SRC     := src
 
-.PHONY: help install install-full demo api test eval clean
+.PHONY: help install install-full demo api test eval clean benchmark-relevance
 
 help:            ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*##' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
@@ -36,6 +36,9 @@ interactive:     ## Launch interactive terminal chat with memory
 
 benchmark:       ## Run 1,000-turn performance benchmark
 	$(PYTHON) -c "import sys; sys.argv=['demo','3']; exec(open('src/demo.py').read())"
+
+benchmark-relevance: ## Compare retrieval relevance before/after token normalization
+	$(PYTHON) -m pytest -q tests/test_retrieval_benchmark.py
 
 # ── Quality ────────────────────────────────────────────────────────────────────
 
