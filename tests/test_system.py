@@ -332,6 +332,13 @@ class TestMemoryRetrieval:
         facts = self.retriever.retrieve_by_type(session_id, "fact", max_memories=3)
         assert [m["source_turn"] for m in facts] == [20, 10, 1]
 
+    def test_semantic_similarity_ignores_punctuation(self):
+        """Test semantic similarity matches words even when punctuation differs"""
+        score = self.retriever._calculate_semantic_similarity(
+            "preferred language is Kannada", "What language?"
+        )
+        assert score > 0
+
 
 class TestConversationAgent:
     """Test end-to-end conversation agent"""

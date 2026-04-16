@@ -4,13 +4,42 @@ Retrieves relevant memories based on context, recency, and importance
 """
 
 import math
-from typing import List, Dict, Any, Optional
-from datetime import datetime
+import re
+from typing import List, Dict, Any
 from collections import defaultdict
 
 
 class MemoryRetriever:
     """Context-aware memory retrieval with relevance ranking"""
+
+    STOPWORDS = {
+        "the",
+        "a",
+        "an",
+        "and",
+        "or",
+        "but",
+        "in",
+        "on",
+        "at",
+        "to",
+        "for",
+        "of",
+        "is",
+        "are",
+        "am",
+        "was",
+        "were",
+        "be",
+        "can",
+        "could",
+        "should",
+        "would",
+        "you",
+        "me",
+        "my",
+        "i",
+    }
 
     def __init__(self, storage):
         """
@@ -137,29 +166,8 @@ class MemoryRetriever:
         Calculate semantic similarity between memory and query
         Uses simple keyword matching (can be enhanced with embeddings)
         """
-        # Convert to lowercase and split into words
-        memory_words = set(memory_content.lower().split())
-        query_words = set(query.lower().split())
-
-        # Remove common stopwords
-        stopwords = {
-            "the",
-            "a",
-            "an",
-            "and",
-            "or",
-            "but",
-            "in",
-            "on",
-            "at",
-            "to",
-            "for",
-            "of",
-            "is",
-            "are",
-        }
-        memory_words -= stopwords
-        query_words -= stopwords
+        memory_words = self._tokenize_text(memory_content)
+        query_words = self._tokenize_text(query)
 
         if not memory_words or not query_words:
             return 0.0
@@ -169,6 +177,11 @@ class MemoryRetriever:
         union = len(memory_words | query_words)
 
         return intersection / union if union > 0 else 0.0
+
+    def _tokenize_text(self, text: str) -> set[str]:
+        """Tokenize text into normalized words with punctuation removed."""
+        tokens = set(re.findall(r"\b[a-z0-9']+\b", text.lower()))
+        return tokens - self.STOPWORDS
 
     def _apply_diversity_filter(
         self, memories: List[Dict[str, Any]], max_count: int
